@@ -434,6 +434,10 @@ def main(argv: list[str] | None = None) -> int:
                     help="overlay the Facebook UI safe zones")
     ap.add_argument("--keep-build", action="store_true",
                     help="keep intermediate segment files")
+    ap.add_argument("--reuse", action="store_true",
+                    help="reuse the joined cut from a previous run -- lets a "
+                         "caption change re-render in one pass instead of "
+                         "re-encoding every clip")
     ap.add_argument("-q", "--quiet", action="store_true")
     args = ap.parse_args(argv)
 
@@ -454,18 +458,28 @@ def main(argv: list[str] | None = None) -> int:
     os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
 
     build_dir = os.path.join(root, "build")
-    if os.path.isdir(build_dir):
+    cached = os.path.join(build_dir, "joined.mp4")
+    reusing = args.reuse and os.path.exists(cached)
+    if os.path.isdir(build_dir) and not reusing:
         shutil.rmtree(build_dir)
-    os.makedirs(build_dir)
+    os.makedirs(build_dir, exist_ok=True)
 
     try:
         if verbose:
             print(f"ffmpeg: {ffmpeg_bin()}")
-            print("[1/3] clips")
-        segments = render_segments(edl, root, build_dir, w, h, fps, verbose)
-        if verbose:
-            print("[2/3] joining")
-        joined = join_segments(segments, build_dir, fps, verbose)
+        if reusing:
+            joined = cached
+            if verbose:
+                print(f"[1/3] reusing {os.path.relpath(cached, root)}")
+                print("[2/3] skipped")
+        else:
+            if verbose:
+                print("[1/3] clips")
+            segments = render_segments(edl, root, build_dir, w, h, fps,
+                                       verbose)
+            if verbose:
+                print("[2/3] joining")
+            joined = join_segments(segments, build_dir, fps, verbose)
         if verbose:
             print("[3/3] b-roll, captions, audio, delivery encode")
         build_final(edl, root, joined, build_dir, out_path, w, h, fps,
@@ -474,7 +488,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"\nbuild failed: {exc}", file=sys.stderr)
         return 1
     finally:
-        if not args.keep_build and os.path.isdir(build_dir):
+        keep = args.keep_build or args.reuse
+        if not keep and os.path.isdir(build_dir):
             shutil.rmtree(build_dir, ignore_errors=True)
 
     if verbose:

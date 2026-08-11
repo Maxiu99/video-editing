@@ -18,6 +18,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from reels import captions as captions_mod  # noqa: E402
+
 # Line numbers below are 1-based, matching tools/align_script.py output.
 
 # Cut for time. 9-12 elaborate a point line 7-8 already makes; 33 repeats
@@ -44,7 +46,7 @@ STACK = [
     (21, 21, "蔬菜怎么搭？"),
     (22, 22, "蛋白质怎么安排？"),
     (23, 23, "用什么方式煮？"),
-    (24, 25, "吃完以后，身体给你什么反馈？"),
+    (24, 25, "身体给你什么反馈？"),
 ]
 
 # The stack sits on her torso: clear of the chin above and of the
@@ -118,17 +120,32 @@ def build(aligned: list[dict], speed: float) -> dict:
         })
 
     # Each checklist card enters on its line and stays until the list ends,
-    # so the questions accumulate instead of replacing one another.
+    # so the questions accumulate instead of replacing one another. Rows are
+    # spaced by the height each card actually wraps to -- a fixed pitch lets
+    # a two-line card overlap the one above it.
+    size = captions_mod.PRESETS["card"]["size"]
+    pad = captions_mod.PRESETS["card"]["pad"]
+    heights = []
+    for _, _, text in STACK:
+        lines = captions_mod.wrap_text(text, size, 1080, 90 + pad).count(r"\N")
+        heights.append((lines + 1) * size * 1.25 + pad)
+
+    margin = STACK_BASE_MARGIN
+    margins = []
+    for height in reversed(heights):        # lay out bottom row upwards
+        margins.append(margin)
+        margin += max(STACK_STEP, height)
+    margins.reverse()
+
     for row, (first, last, text) in enumerate(STACK):
         if first not in starts:
             continue
-        margin = STACK_BASE_MARGIN + (len(STACK) - 1 - row) * STACK_STEP
         captions.append({
             "t": round(starts[first] + 0.04, 2),
             "d": round(stack_end - starts[first] + 0.35, 2),
             "text": text,
             "style": "card",
-            "margin_v": margin,
+            "margin_v": int(margins[row]),
         })
 
     captions.sort(key=lambda c: c["t"])
