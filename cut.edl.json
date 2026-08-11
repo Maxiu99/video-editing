@@ -2,8 +2,9 @@
   "title": "reel_90",
   "source": "raw/A1.MOV",
   "grade": "warm",
+  "denoise": true,
   "preset": "medium",
-  "crf": 20,
+  "crf": 21,
   "output": {
     "width": 1080,
     "height": 1920,

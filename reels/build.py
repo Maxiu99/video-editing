@@ -290,6 +290,15 @@ def build_final(edl: dict, root: str, joined: str, build_dir: str,
             f":color={colour}@0.92:t=fill[prog]")
         v_label = "prog"
 
+    # A locked-off shot spends most of its bitrate coding sensor noise. A
+    # light denoise before the delivery encode cuts the file substantially
+    # and survives Facebook's own re-encode better.
+    denoise = edl.get("denoise")
+    if denoise:
+        strength = "1.5:1.5:6:6" if denoise is True else str(denoise)
+        v_filters.append(f"[{v_label}]hqdn3d={strength}[clean]")
+        v_label = "clean"
+
     grade = edl.get("grade")
     if grade and grade != "none":
         if grade not in GRADES:
