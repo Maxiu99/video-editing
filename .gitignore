@@ -1,0 +1,11 @@
+# Media stays out of git -- push large sources as release assets or LFS.
+raw/*
+broll/*
+music/*
+assets/*
+out/*
+build/
+!*/.gitkeep
+
+__pycache__/
+*.pyc

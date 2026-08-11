@@ -1,0 +1,72 @@
+{
+  "title": "demo_reel",
+  "source": "raw/demo_raw.mp4",
+  "grade": "punch",
+  "output": { "width": 1080, "height": 1920, "fps": 30 },
+
+  "clips": [
+    {
+      "in": "0:00.5", "out": "0:05.0",
+      "reframe": "crop", "zoom": 0.10,
+      "comment": "hook shot -- slow push in, no transition on the first clip"
+    },
+    {
+      "in": "0:05.5", "out": "0:11.5",
+      "reframe": "blur", "transition": "fade", "transition_dur": 0.3,
+      "comment": "wide shot kept whole on a blurred backdrop"
+    },
+    {
+      "in": "0:12.0", "out": "0:16.0",
+      "reframe": "crop", "speed": 1.6, "grade": "cool",
+      "transition": "slideleft", "transition_dur": 0.25,
+      "comment": "sped-up beat to keep the middle from sagging"
+    },
+    {
+      "in": "0:16.0", "out": "0:23.5",
+      "reframe": "crop", "zoom": -0.08,
+      "transition": "circleopen", "transition_dur": 0.4,
+      "comment": "payoff shot -- pull back out"
+    }
+  ],
+
+  "broll": [
+    { "file": "broll/demo_broll_a.mp4", "at": "0:04.3", "dur": 1.8,
+      "mode": "full", "fade": 0.25, "in": "0:01.0" },
+    { "file": "broll/demo_broll_b.mp4", "at": "0:07.5", "dur": 2.2,
+      "mode": "pip", "width": 470, "y": 340, "in": "0:02.0" },
+    { "file": "broll/demo_broll_a.mp4", "at": "0:11.0", "dur": 2.0,
+      "mode": "split", "in": "0:04.0" }
+  ],
+
+  "captions": [
+    { "t": 0.15, "d": 2.4, "text": "Stop scrolling", "style": "hook" },
+    { "t": 2.7,  "d": 2.6, "text": "here is the part\\Nnobody tells you",
+      "style": "body", "size": 74 },
+    { "t": 5.6,  "d": 3.0, "text": "three things changed everything",
+      "style": "karaoke" },
+    { "t": 8.9,  "d": 2.0, "text": "one: show the result first",
+      "style": "body" },
+    { "t": 11.2, "d": 2.0, "text": "two: cut every dead second",
+      "style": "body" },
+    { "t": 13.4, "d": 2.2, "text": "THREE", "style": "statement" },
+    { "t": 15.8, "d": 2.6, "text": "captions carry the sound-off viewer",
+      "style": "body" },
+    { "t": 18.6, "d": 2.4, "text": "follow for the full breakdown",
+      "style": "hook", "size": 84 }
+  ],
+
+  "music": {
+    "file": "music/demo_bed.wav",
+    "gain_db": -20,
+    "duck": true,
+    "fade_out": 1.5
+  },
+
+  "audio": { "lufs": -14, "voice_db": 0 },
+
+  "brand": {
+    "handle": "@yourhandle",
+    "progress_bar": true,
+    "progress_color": "#FF2D55"
+  }
+}
