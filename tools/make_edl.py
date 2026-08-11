@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import sys
 
@@ -33,6 +34,7 @@ STYLES = {
     26: "card_accent",    # credibility
     30: "card_accent",    # the emotional payoff
     36: "card_accent",    # the offer
+    37: "card_accent",    # the click instruction
 }
 
 # The four-question checklist, stacked on screen as it is spoken. Each entry
@@ -45,11 +47,25 @@ STACK = [
     (24, 25, "吃完以后，身体给你什么反馈？"),
 ]
 
-STACK_BASE_MARGIN = 610      # bottom card, distance from frame bottom
-STACK_STEP = 108             # row pitch
+# The stack sits on her torso: clear of the chin above and of the
+# caption/CTA strip below.
+STACK_BASE_MARGIN = 470      # bottom card, distance from frame bottom
+STACK_STEP = 100             # row pitch
 
 CLIP_HOLD = 0.08             # breath left on the end of each clip
 SPEED = 1.05                 # imperceptible on speech, buys ~4s
+FPS = 30
+TARGET = 88.0                # leave headroom under the 90s Reels ceiling
+
+
+def quantised(src_dur: float, speed: float, fps: int = FPS) -> float:
+    """Clip length as the encoder will actually emit it.
+
+    Each segment is encoded on its own, so a partial trailing frame is
+    rounded up to a whole one. Across 30-odd clips that rounding is worth
+    about a second -- enough to push a 89s cut over the 90s limit.
+    """
+    return math.ceil(src_dur / speed * fps) / fps
 
 
 def build(aligned: list[dict], speed: float) -> dict:
@@ -75,7 +91,7 @@ def build(aligned: list[dict], speed: float) -> dict:
 
     for line in kept:
         src_dur = line["clip_out"] - line["clip_in"]
-        out_dur = src_dur / speed
+        out_dur = quantised(src_dur, speed)
         clips.append({
             "in": round(line["clip_in"], 3),
             "out": round(line["clip_out"], 3),
@@ -132,22 +148,42 @@ def build(aligned: list[dict], speed: float) -> dict:
     }
 
 
+def solve_speed(aligned: list[dict], target: float,
+                low: float = 1.0, high: float = 1.4) -> float:
+    """Smallest speed-up that brings the runtime to ``target``."""
+    if build(aligned, low)["_runtime_estimate"] <= target:
+        return low
+    for _ in range(40):
+        mid = (low + high) / 2
+        if build(aligned, mid)["_runtime_estimate"] > target:
+            low = mid
+        else:
+            high = mid
+    return round(high, 3)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("aligned", nargs="?", default="aligned.json")
     ap.add_argument("-o", "--out", default="cut.edl.json")
     ap.add_argument("--speed", type=float, default=SPEED)
+    ap.add_argument("--target", type=float, default=None,
+                    help=f"solve for the speed that lands here (try {TARGET})")
     args = ap.parse_args()
 
     with open(args.aligned) as fh:
         aligned = json.load(fh)
 
-    edl = build(aligned, args.speed)
+    speed = args.speed
+    if args.target:
+        speed = solve_speed(aligned, args.target)
+        print(f"speed {speed:.3f}x to land at {args.target:.0f}s")
+    edl = build(aligned, speed)
     with open(args.out, "w") as fh:
         json.dump(edl, fh, ensure_ascii=False, indent=2)
 
     print(f"{len(edl['clips'])} clips, {len(edl['captions'])} captions")
-    print(f"estimated runtime {edl['_runtime_estimate']:.1f}s at {args.speed}x")
+    print(f"estimated runtime {edl['_runtime_estimate']:.1f}s at {speed}x")
     if edl["_runtime_estimate"] > 90:
         print("! over the 90s Reels limit -- drop another line or raise speed")
     print(f"wrote {args.out}")

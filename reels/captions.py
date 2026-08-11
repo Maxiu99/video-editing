@@ -29,13 +29,13 @@ SAFE_BOTTOM = 0.20
 PRESETS: dict[str, dict] = {
     # The opening line: large, high on the frame, impossible to scroll past.
     "hook": {
-        "size": 104, "primary": YELLOW, "outline": 9, "align": 8,
-        "margin_v": 300, "anim": "pop", "upper": True,
+        "size": 100, "primary": YELLOW, "outline": 11, "align": 8,
+        "margin_v": 250, "anim": "pop", "upper": True,
     },
     # Standard narration captions.
     "body": {
-        "size": 78, "primary": WHITE, "outline": 7, "align": 2,
-        "margin_v": 620, "anim": "pop", "upper": False,
+        "size": 76, "primary": WHITE, "outline": 9, "align": 2,
+        "margin_v": 600, "anim": "pop", "upper": False,
     },
     # Word-by-word highlight, timed evenly across the line.
     "karaoke": {
@@ -75,6 +75,148 @@ ANIMATIONS = {
 }
 
 
+# Punctuation that may not begin a line, per CJK line-breaking convention.
+NO_LINE_START = "，。、！？：；）」』”’%…"
+NO_LINE_END = "（「『“‘"
+
+# Rough advance widths as a fraction of the font size.
+WIDTH_CJK = 1.0
+WIDTH_LATIN = 0.55
+
+
+def _word_boundaries(text: str) -> set[int] | None:
+    """Offsets in ``text`` where a line may break without splitting a word.
+
+    Optional: without a segmenter the wrapper still balances lines, it just
+    cannot tell 妈|妈 from a legitimate break.
+    """
+    try:
+        import logging
+
+        import jieba
+    except ImportError:
+        return None
+    jieba.setLogLevel(logging.ERROR)
+    bounds, pos = {0}, 0
+    for token in jieba.cut(text):
+        pos += len(token)
+        bounds.add(pos)
+    return bounds
+
+
+def _advance(ch: str, size: float) -> float:
+    if CJK.search(ch) or ch in NO_LINE_START or ch in NO_LINE_END:
+        return size * WIDTH_CJK
+    return size * WIDTH_LATIN
+
+
+def wrap_text(text: str, size: float, width: int = 1080,
+              margin: int = 90) -> str:
+    """Insert ASS line breaks so a caption cannot overflow the frame.
+
+    libass breaks lines at spaces. Chinese has none, so a long line runs
+    straight off both edges of the frame unless the breaks are placed
+    here. Latin text keeps word boundaries; CJK breaks between glyphs,
+    honouring the rule that closing punctuation may not open a line.
+    """
+    if r"\N" in text:      # an explicit break wins
+        return r"\N".join(
+            wrap_text(part, size, width, margin) for part in text.split(r"\N"))
+
+    avail = width - 2 * margin
+    if not CJK.search(text):
+        return _wrap_words(text, size, avail)
+    return _wrap_cjk(text, size, avail)
+
+
+def _wrap_cjk(text: str, size: float, avail: float) -> str:
+    """Break CJK text into balanced lines, preferring punctuation.
+
+    Filling each line greedily to the margin leaves a long line above a
+    stub and usually splits a word; on a caption that reads badly. The
+    line count is fixed by the text width, then the breaks are chosen to
+    even the lines out and to land after punctuation where possible.
+    """
+    widths = [_advance(c, size) for c in text]
+    total = sum(widths)
+    if total <= avail:
+        return text
+
+    n = int(total // avail) + 1
+    target = total / n
+    length = len(text)
+    boundaries = _word_boundaries(text)
+
+    prefix = [0.0]
+    for w in widths:
+        prefix.append(prefix[-1] + w)
+
+    INF = float("inf")
+    cost = [[INF] * (length + 1) for _ in range(n + 1)]
+    back = [[-1] * (length + 1) for _ in range(n + 1)]
+    cost[0][0] = 0.0
+
+    for line in range(1, n + 1):
+        for end in range(line, length - (n - line) + 1):
+            for start in range(line - 1, end):
+                if cost[line - 1][start] == INF:
+                    continue
+                span = prefix[end] - prefix[start]
+                if span > avail:
+                    continue
+                if text[start] in NO_LINE_START or text[end - 1] in NO_LINE_END:
+                    continue
+                penalty = (span - target) ** 2
+                if end < length and text[end - 1] in NO_LINE_START:
+                    penalty *= 0.25      # breaking after punctuation reads well
+                elif boundaries is not None and end not in boundaries:
+                    # Soft, not forbidden: one word can outrun a whole line.
+                    penalty += (2.0 * target) ** 2
+                if cost[line - 1][start] + penalty < cost[line][end]:
+                    cost[line][end] = cost[line - 1][start] + penalty
+                    back[line][end] = start
+
+    if cost[n][length] == INF:       # no legal split: fall back to filling
+        return _fill_cjk(text, widths, avail)
+
+    cuts, pos = [], length
+    for line in range(n, 0, -1):
+        start = back[line][pos]
+        cuts.append(text[start:pos])
+        pos = start
+    return r"\N".join(reversed(cuts))
+
+
+def _fill_cjk(text: str, widths: list[float], avail: float) -> str:
+    lines, current, used = [], "", 0.0
+    for ch, adv in zip(text, widths):
+        if current and used + adv > avail:
+            lines.append(current)
+            current, used = ch, adv
+        else:
+            current += ch
+            used += adv
+    if current:
+        lines.append(current)
+    return r"\N".join(lines)
+
+
+def _wrap_words(text: str, size: float, avail: float) -> str:
+    lines, current, used = [], [], 0.0
+    space = size * WIDTH_LATIN
+    for word in text.split():
+        w = sum(_advance(c, size) for c in word)
+        if current and used + space + w > avail:
+            lines.append(" ".join(current))
+            current, used = [word], w
+        else:
+            used += (space if current else 0) + w
+            current.append(word)
+    if current:
+        lines.append(" ".join(current))
+    return r"\N".join(lines)
+
+
 def ass_time(seconds: float) -> str:
     seconds = max(0.0, seconds)
     h = int(seconds // 3600)
@@ -99,6 +241,15 @@ def _split_words(text: str) -> list[str]:
 
 
 def _karaoke_body(text: str, duration: float) -> str:
+    """Time a per-word highlight across the line, preserving line breaks."""
+    if r"\N" in text:
+        segments = text.split(r"\N")
+        weights = [max(1, len(_split_words(s))) for s in segments]
+        total = sum(weights)
+        return r"\N".join(
+            _karaoke_body(seg, duration * w / total)
+            for seg, w in zip(segments, weights))
+
     words = _split_words(text)
     if not words:
         return text
@@ -186,10 +337,16 @@ def build_ass(captions: list[dict], width: int = 1080, height: int = 1920,
             anim = anim % {"y_from": height - preset["margin_v"] + 60,
                            "y_to": height - preset["margin_v"]}
 
+        # Break the line before styling it, so neither the karaoke tags nor
+        # the escape pass has to survive being split.
+        side_margin = 90 + (preset.get("pad", 0) if preset.get("box") else 0)
+        wrapped = wrap_text(_escape(text).replace("\n", r"\N"),
+                            preset["size"], width, side_margin)
+
         if cap.get("style") == "karaoke" or preset.get("anim") == "karaoke":
-            body = _karaoke_body(_escape(text), dur)
+            body = _karaoke_body(wrapped, dur)
         else:
-            body = _escape(text).replace("\n", r"\N")
+            body = wrapped
 
         # Fields must line up with the Events Format line below:
         # Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text

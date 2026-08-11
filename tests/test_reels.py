@@ -117,6 +117,55 @@ class AssOutput(unittest.TestCase):
         self.assertIn("PlayResY: 1920", self.doc)
 
 
+class Wrapping(unittest.TestCase):
+    def widest(self, wrapped: str, size: float) -> float:
+        return max(sum(cap._advance(c, size) for c in line)
+                   for line in wrapped.split(r"\N"))
+
+    def test_cjk_line_fits_the_frame(self):
+        # libass breaks on spaces; Chinese has none, so an unwrapped line
+        # runs off both edges of the frame.
+        text = "如果你已经很认真照顾孩子的饮食"
+        wrapped = cap.wrap_text(text, 78, 1080, 90)
+        self.assertIn(r"\N", wrapped)
+        self.assertLessEqual(self.widest(wrapped, 78), 1080 - 180)
+
+    def test_short_line_is_left_alone(self):
+        self.assertNotIn(r"\N", cap.wrap_text("蔬菜怎么搭？", 64, 1080, 90))
+
+    def test_no_characters_lost(self):
+        text = "建立一套自己长期能够使用的饮食判断方法"
+        self.assertEqual(cap.wrap_text(text, 78).replace(r"\N", ""), text)
+
+    def test_lines_are_balanced(self):
+        # Greedy filling would leave a full line above a stub.
+        lines = cap.wrap_text("我这样给孩子吃，到底对不对？", 100).split(r"\N")
+        self.assertEqual(len(lines), 2)
+        self.assertLessEqual(abs(len(lines[0]) - len(lines[1])), 3)
+
+    def test_closing_punctuation_never_opens_a_line(self):
+        for line in cap.wrap_text("不代表放进孩子每天的饮食里面，整个结构就是对的",
+                                  78).split(r"\N"):
+            self.assertNotIn(line[0], cap.NO_LINE_START)
+
+    def test_explicit_breaks_survive(self):
+        self.assertEqual(cap.wrap_text(r"短句\N另一句", 64), r"短句\N另一句")
+
+    def test_latin_breaks_on_words(self):
+        wrapped = cap.wrap_text("Stop scrolling and read this whole line", 78)
+        for line in wrapped.split(r"\N"):
+            self.assertFalse(line.startswith(" "))
+        self.assertEqual(wrapped.replace(r"\N", " ").split(),
+                         "Stop scrolling and read this whole line".split())
+
+    def test_karaoke_survives_wrapping(self):
+        doc = cap.build_ass([{"t": 0, "d": 2.0, "style": "karaoke",
+                              "text": "如果你已经很认真照顾孩子的饮食"}])
+        line = next(l for l in doc.splitlines() if l.startswith("Dialogue:"))
+        self.assertIn(r"\N", line)
+        self.assertIn(r"\k", line)
+
+
 class SafeZone(unittest.TestCase):
     def test_flags_caption_under_the_cta_strip(self):
         warnings = cap.check_safe_zone(
