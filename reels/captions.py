@@ -52,6 +52,18 @@ PRESETS: dict[str, dict] = {
         "size": 118, "primary": WHITE, "outline": 10, "align": 5,
         "margin_v": 0, "anim": "pop", "upper": True,
     },
+    # Motion-graphic card: text on an opaque slab rather than an outline.
+    # Cheaper and sharper than cutting to b-roll, and it keeps the speaker
+    # on screen.
+    "card": {
+        "size": 64, "primary": WHITE, "box": "&H00232323", "pad": 18,
+        "align": 2, "margin_v": 900, "anim": "slide", "upper": False,
+    },
+    # The same slab in the accent colour, for the one line that matters most.
+    "card_accent": {
+        "size": 66, "primary": "&H00101010", "box": YELLOW, "pad": 20,
+        "align": 2, "margin_v": 900, "anim": "pop", "upper": False,
+    },
 }
 
 ANIMATIONS = {
@@ -126,7 +138,7 @@ def build_ass(captions: list[dict], width: int = 1080, height: int = 1920,
                                   PRESETS[default_style]))
         # Inline overrides: size, primary, align, margin_v, anim, upper...
         for key in ("size", "primary", "secondary", "outline", "align",
-                    "margin_v", "anim", "upper", "font"):
+                    "margin_v", "anim", "upper", "font", "box", "pad"):
             if key in cap:
                 preset[key] = cap[key]
 
@@ -136,21 +148,30 @@ def build_ass(captions: list[dict], width: int = 1080, height: int = 1920,
         font = preset.get("font") or pick_font(text)
         name = _style_name(i)
 
+        # BorderStyle 3 fills an opaque slab behind the text, and libass
+        # paints that slab in OutlineColour with Outline as its padding.
+        if preset.get("box"):
+            border_style, edge_colour = "3", preset["box"]
+            edge_size, shadow_depth = str(preset.get("pad", 18)), "0"
+        else:
+            border_style, edge_colour = "1", BLACK
+            edge_size, shadow_depth = str(preset.get("outline", 6)), "3"
+
         styles.append(",".join([
             f"Style: {name}",
             font,
             str(preset["size"]),
             preset["primary"],
             preset.get("secondary", WHITE),
-            BLACK,                      # outline
-            SHADOW,                     # shadow / back
+            edge_colour,
+            SHADOW,                     # back / shadow colour
             "-1",                       # bold
             "0", "0", "0",              # italic, underline, strikeout
             "100", "100",               # scale x/y
             "0", "0",                   # spacing, angle
-            "1",                        # border style: outline + shadow
-            str(preset["outline"]),
-            "3",                        # shadow depth
+            border_style,
+            edge_size,
+            shadow_depth,
             str(preset["align"]),
             "90", "90",                 # margin l/r
             str(preset["margin_v"]),

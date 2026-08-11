@@ -1,0 +1,496 @@
+[
+  {
+    "text": "如果你已经很认真照顾孩子的饮食，",
+    "start": 5.664,
+    "end": 8.301,
+    "spans": [
+      0,
+      0
+    ],
+    "units": 15,
+    "predicted": 4.12,
+    "measured": 2.64,
+    "drift": -1.48
+  },
+  {
+    "text": "会看成分表、会挑食材，",
+    "start": 8.817,
+    "end": 11.333,
+    "spans": [
+      1,
+      2
+    ],
+    "units": 9,
+    "predicted": 2.47,
+    "measured": 2.52,
+    "drift": 0.05
+  },
+  {
+    "text": "也愿意花钱买比较好的食品，",
+    "start": 11.638,
+    "end": 14.086,
+    "spans": [
+      3,
+      3
+    ],
+    "units": 12,
+    "predicted": 3.29,
+    "measured": 2.45,
+    "drift": -0.84
+  },
+  {
+    "text": "但心里面还是常常会问：",
+    "start": 14.432,
+    "end": 16.459,
+    "spans": [
+      4,
+      4
+    ],
+    "units": 10,
+    "predicted": 2.74,
+    "measured": 2.03,
+    "drift": -0.71
+  },
+  {
+    "text": "我这样给孩子吃，到底对不对？",
+    "start": 16.822,
+    "end": 21.081,
+    "spans": [
+      5,
+      6
+    ],
+    "units": 12,
+    "predicted": 3.29,
+    "measured": 4.26,
+    "drift": 0.97
+  },
+  {
+    "text": "那你一定要听完。",
+    "start": 21.363,
+    "end": 23.468,
+    "spans": [
+      7,
+      7
+    ],
+    "units": 7,
+    "predicted": 1.92,
+    "measured": 2.11,
+    "drift": 0.19
+  },
+  {
+    "text": "很多妈妈不是不懂营养，",
+    "start": 23.945,
+    "end": 26.798,
+    "spans": [
+      8,
+      9
+    ],
+    "units": 10,
+    "predicted": 2.74,
+    "measured": 2.85,
+    "drift": 0.11
+  },
+  {
+    "text": "反而已经懂很多。",
+    "start": 27.139,
+    "end": 29.423,
+    "spans": [
+      10,
+      10
+    ],
+    "units": 7,
+    "predicted": 1.92,
+    "measured": 2.28,
+    "drift": 0.36
+  },
+  {
+    "text": "看到高营养、天然配方、无添加，",
+    "start": 29.854,
+    "end": 33.321,
+    "spans": [
+      11,
+      12
+    ],
+    "units": 12,
+    "predicted": 3.29,
+    "measured": 3.47,
+    "drift": 0.18
+  },
+  {
+    "text": "会认真比较；",
+    "start": 34.281,
+    "end": 35.726,
+    "spans": [
+      13,
+      13
+    ],
+    "units": 5,
+    "predicted": 1.37,
+    "measured": 1.45,
+    "drift": 0.08
+  },
+  {
+    "text": "买东西也不是只看价钱，",
+    "start": 36.054,
+    "end": 39.476,
+    "spans": [
+      14,
+      15
+    ],
+    "units": 10,
+    "predicted": 2.74,
+    "measured": 3.42,
+    "drift": 0.68
+  },
+  {
+    "text": "而是希望给孩子更好的。",
+    "start": 39.72,
+    "end": 41.852,
+    "spans": [
+      16,
+      16
+    ],
+    "units": 10,
+    "predicted": 2.74,
+    "measured": 2.13,
+    "drift": -0.61
+  },
+  {
+    "text": "可是问题来了：",
+    "start": 41.899,
+    "end": 44.141,
+    "spans": [
+      17,
+      18
+    ],
+    "units": 6,
+    "predicted": 1.65,
+    "measured": 2.24,
+    "drift": 0.59
+  },
+  {
+    "text": "单独一个产品很好，",
+    "start": 44.888,
+    "end": 47.067,
+    "spans": [
+      19,
+      21
+    ],
+    "units": 8,
+    "predicted": 2.2,
+    "measured": 2.18,
+    "drift": -0.02
+  },
+  {
+    "text": "不代表放进孩子每天的饮食里面，",
+    "start": 47.821,
+    "end": 51.414,
+    "spans": [
+      22,
+      24
+    ],
+    "units": 14,
+    "predicted": 3.84,
+    "measured": 3.59,
+    "drift": -0.25
+  },
+  {
+    "text": "整个结构就是对的。",
+    "start": 51.935,
+    "end": 53.347,
+    "spans": [
+      25,
+      25
+    ],
+    "units": 8,
+    "predicted": 2.2,
+    "measured": 1.41,
+    "drift": -0.79
+  },
+  {
+    "text": "所以我看孩子的饮食，",
+    "start": 53.69,
+    "end": 55.997,
+    "spans": [
+      26,
+      26
+    ],
+    "units": 9,
+    "predicted": 2.47,
+    "measured": 2.31,
+    "drift": -0.16
+  },
+  {
+    "text": "不只是看包装写什么。",
+    "start": 56.291,
+    "end": 58.275,
+    "spans": [
+      27,
+      27
+    ],
+    "units": 9,
+    "predicted": 2.47,
+    "measured": 1.98,
+    "drift": -0.49
+  },
+  {
+    "text": "我更关心：",
+    "start": 58.825,
+    "end": 59.941,
+    "spans": [
+      28,
+      28
+    ],
+    "units": 4,
+    "predicted": 1.1,
+    "measured": 1.12,
+    "drift": 0.02
+  },
+  {
+    "text": "这一餐主食是什么？",
+    "start": 61.209,
+    "end": 65.736,
+    "spans": [
+      29,
+      29
+    ],
+    "units": 8,
+    "predicted": 2.2,
+    "measured": 4.53,
+    "drift": 2.33
+  },
+  {
+    "text": "蔬菜怎么搭？",
+    "start": 66.052,
+    "end": 68.048,
+    "spans": [
+      30,
+      30
+    ],
+    "units": 5,
+    "predicted": 1.37,
+    "measured": 2.0,
+    "drift": 0.63
+  },
+  {
+    "text": "蛋白质怎么安排？",
+    "start": 68.819,
+    "end": 70.47,
+    "spans": [
+      31,
+      32
+    ],
+    "units": 7,
+    "predicted": 1.92,
+    "measured": 1.65,
+    "drift": -0.27
+  },
+  {
+    "text": "用什么方式煮？",
+    "start": 70.711,
+    "end": 73.472,
+    "spans": [
+      33,
+      33
+    ],
+    "units": 6,
+    "predicted": 1.65,
+    "measured": 2.76,
+    "drift": 1.11
+  },
+  {
+    "text": "孩子吃完以后，",
+    "start": 73.807,
+    "end": 75.028,
+    "spans": [
+      34,
+      34
+    ],
+    "units": 6,
+    "predicted": 1.65,
+    "measured": 1.22,
+    "drift": -0.43
+  },
+  {
+    "text": "身体又给你什么反馈？",
+    "start": 75.159,
+    "end": 77.579,
+    "spans": [
+      35,
+      35
+    ],
+    "units": 9,
+    "predicted": 2.47,
+    "measured": 2.42,
+    "drift": -0.05
+  },
+  {
+    "text": "这些年我陪伴过上百个家庭。",
+    "start": 78.105,
+    "end": 79.801,
+    "spans": [
+      36,
+      37
+    ],
+    "units": 12,
+    "predicted": 3.29,
+    "measured": 1.7,
+    "drift": -1.59
+  },
+  {
+    "text": "我发现真正让妈妈越来越安心的，",
+    "start": 80.214,
+    "end": 84.343,
+    "spans": [
+      38,
+      39
+    ],
+    "units": 14,
+    "predicted": 3.84,
+    "measured": 4.13,
+    "drift": 0.29
+  },
+  {
+    "text": "不是找到更多所谓的健康产品。",
+    "start": 84.684,
+    "end": 88.154,
+    "spans": [
+      40,
+      41
+    ],
+    "units": 13,
+    "predicted": 3.57,
+    "measured": 3.47,
+    "drift": -0.1
+  },
+  {
+    "text": "而是有一天她开始发现：",
+    "start": 88.823,
+    "end": 91.554,
+    "spans": [
+      42,
+      42
+    ],
+    "units": 10,
+    "predicted": 2.74,
+    "measured": 2.73,
+    "drift": -0.01
+  },
+  {
+    "text": "原来我自己会判断了。",
+    "start": 91.821,
+    "end": 94.55,
+    "spans": [
+      43,
+      43
+    ],
+    "units": 9,
+    "predicted": 2.47,
+    "measured": 2.73,
+    "drift": 0.26
+  },
+  {
+    "text": "如果你只是想拿几张健康食谱，",
+    "start": 94.674,
+    "end": 98.238,
+    "spans": [
+      44,
+      46
+    ],
+    "units": 13,
+    "predicted": 3.57,
+    "measured": 3.56,
+    "drift": -0.01
+  },
+  {
+    "text": "这场分享会可能不是你要找的。",
+    "start": 98.877,
+    "end": 103.356,
+    "spans": [
+      47,
+      48
+    ],
+    "units": 13,
+    "predicted": 3.57,
+    "measured": 4.48,
+    "drift": 0.91
+  },
+  {
+    "text": "但如果你已经认真照顾孩子一段时间，",
+    "start": 103.737,
+    "end": 108.68,
+    "spans": [
+      49,
+      50
+    ],
+    "units": 16,
+    "predicted": 4.39,
+    "measured": 4.94,
+    "drift": 0.55
+  },
+  {
+    "text": "现在想真正理解一餐背后的逻辑，",
+    "start": 108.744,
+    "end": 112.417,
+    "spans": [
+      51,
+      52
+    ],
+    "units": 14,
+    "predicted": 3.84,
+    "measured": 3.67,
+    "drift": -0.17
+  },
+  {
+    "text": "建立一套自己长期能够使用的饮食判断方法，",
+    "start": 112.84,
+    "end": 119.705,
+    "spans": [
+      53,
+      56
+    ],
+    "units": 19,
+    "predicted": 5.21,
+    "measured": 6.86,
+    "drift": 1.65
+  },
+  {
+    "text": "欢迎你来参加我的免费线上分享会。",
+    "start": 120.089,
+    "end": 124.283,
+    "spans": [
+      57,
+      57
+    ],
+    "units": 15,
+    "predicted": 4.12,
+    "measured": 4.19,
+    "drift": 0.07
+  },
+  {
+    "text": "点击下方了解详情，",
+    "start": 124.764,
+    "end": 127.982,
+    "spans": [
+      58,
+      58
+    ],
+    "units": 8,
+    "predicted": 2.2,
+    "measured": 3.22,
+    "drift": 1.02
+  },
+  {
+    "text": "我们线上见。",
+    "start": 128.875,
+    "end": 132.628,
+    "spans": [
+      59,
+      59
+    ],
+    "units": 5,
+    "predicted": 1.37,
+    "measured": 3.75,
+    "drift": 2.38
+  }
+]
